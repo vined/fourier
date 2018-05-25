@@ -22,7 +22,7 @@ splitByOddAndEvenIdx items =
 getAngle :: Int -> Int -> Double
 getAngle m k =
     if k == 0
-        then 1
+        then 0
         else 2 * pi * (fromIntegral k) / (fromIntegral m)
 
 
