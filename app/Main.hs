@@ -1,13 +1,64 @@
 module Main where
 
 import System.Environment (getArgs)
-import DiscreteFourier
+import Codec.Wav (exportFile, importFile)
+import Data.Audio (Audio(Audio))
+import Data.Array.Unboxed (elems)
+import Data.Int (Int32)
+import Data.Time.Clock (diffUTCTime, getCurrentTime)
+
+import AudioUtils (getFirstChannel, saveAudio, readAudio)
+import DiscreteFourier (discreteFourier, inverseDiscreteFourier)
 import FastFourier
 
 
 main :: IO ()
 main = do
-    (data_file_name:output_file_name:_) <- getArgs
-    putStrLn $ "Reading audio file " ++ data_file_name
+    (command:args) <- getArgs
+    let (Just action) = lookup command dispatch
+    action args
 
-    putStrLn $ "Writing to audio file " ++ output_file_name
+
+dispatch :: [(String, [String] -> IO ())]
+dispatch = [ ("mono", mono)
+           , ("dft", dft)
+           , ("fft", fft)
+           ]
+
+
+mono :: [String] -> IO ()
+mono [inputFilePath, outputFilePath] = do
+    (rate, audio) <- readAudio inputFilePath
+    saveAudio outputFilePath rate audio
+
+
+dft :: [String] -> IO ()
+dft [inputFilePath, outputFilePath] = do
+
+    putStrLn "Discrete fourier transform"
+    (rate, audio) <- readAudio inputFilePath
+    start <- getCurrentTime
+
+    let result = inverseDiscreteFourier $ discreteFourier audio
+    putStrLn $ "Input size " ++ (show $ length audio)
+    putStrLn $ "Output size " ++ (show $ length result)
+    saveAudio outputFilePath rate result
+
+    end <- getCurrentTime
+    putStrLn $ "Duration : " ++ (show $ (diffUTCTime end start))
+
+
+fft :: [String] -> IO ()
+fft [inputFilePath, outputFilePath] = do
+
+    putStrLn "Fast fourier transform"
+    (rate, audio) <- readAudio inputFilePath
+    start <- getCurrentTime
+
+    let result = fastFourier audio
+    putStrLn $ "Input size " ++ (show $ length audio)
+    putStrLn $ "Output size " ++ (show $ length result)
+    saveAudio outputFilePath rate result
+
+    end <- getCurrentTime
+    putStrLn $ "Duration : " ++ (show $ (diffUTCTime end start))

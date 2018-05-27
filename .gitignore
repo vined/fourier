@@ -25,3 +25,4 @@ fourier.cabal
 
 .idea
 data
+out.wav
