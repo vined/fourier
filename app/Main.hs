@@ -44,23 +44,24 @@ dftVsFft [inputFilePath, outputFilePath] = do
 
     start <- getCurrentTime
     let rdft = discreteFourier d
-    printData rdft
+--     printData rdft
 
     end <- getCurrentTime
     putStrLn $ "Duration : " ++ (show $ (diffUTCTime end start))
 
     let ridft = inverseDiscreteFourier rdft
-    printData ridft
+--     printData ridft
 
     start <- getCurrentTime
     let rfft = fastFourier d
-    printData rfft
+--     printData rfft
 
     end <- getCurrentTime
     putStrLn $ "Duration : " ++ (show $ (diffUTCTime end start))
 
     let rifft = inverseFastFourier rfft
-    printData rifft
+--     printData rifft
+    putStrLn "Done."
 
 
 dftAudio :: [String] -> IO ()
@@ -68,28 +69,26 @@ dftAudio [inputFilePath, outputFilePath] = do
 
     putStrLn "Discrete fourier audio transform"
     (rate, audio) <- readAudio inputFilePath
-    start <- getCurrentTime
+    putStrLn $ "Input size " ++ (show $ length audio)
 
---     let result = inverseDiscreteFourier $ discreteFourier audio
---     saveAudio outputFilePath rate result
+    start <- getCurrentTime
+    let result = inverseDiscreteFourier $ discreteFourier audio
+    saveAudio outputFilePath rate result
 
     end <- getCurrentTime
-    putStrLn $ "Input size " ++ (show $ length audio)
---     putStrLn $ "Output size " ++ (show $ length result)
     putStrLn $ "Duration : " ++ (show $ (diffUTCTime end start))
 
 
 fftAudio :: [String] -> IO ()
-fftAudio [inputFilePath, outputFilePath] = do
+fftAudio [inputFilePath, outputFilePath, filterFromHz, filterToHz] = do
 
     putStrLn "Fast fourier audio transform"
     (rate, audio) <- readAudio inputFilePath
-    start <- getCurrentTime
+    putStrLn $ "Input size " ++ (show $ length audio)
 
---     let result = fastFourier audio
---     saveAudio outputFilePath rate result
+    start <- getCurrentTime
+    let result = inverseFastFourier $ fastFourier audio
+    saveAudio outputFilePath rate result
 
     end <- getCurrentTime
-    putStrLn $ "Input size " ++ (show $ length audio)
---     putStrLn $ "Output size " ++ (show $ length result)
     putStrLn $ "Duration : " ++ (show $ (diffUTCTime end start))
