@@ -23,6 +23,18 @@ cabal.project.local~
 fourier.cabal
 *~
 
+# Project
 .idea
 data
 out.wav
+
+# Latex
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+Output
+Output_grep
+
+mainDocument.pdf
